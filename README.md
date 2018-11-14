@@ -11,67 +11,75 @@ _Reference_: https://stackoverflow.com/questions/46512888/how-is-string-concaten
 String concatenation is one of the most well known caveat in Java.
 
 ## java 8
-```
-@Test
-public void nonLoopConcatenation() {
+* all of the substrings building the final String are known at compile 
+time:
+    ```
+    @Test
+    public void nonLoopConcatenation() {
+        String a = "a";
+        String b = "b";
+        System.out.println(a + b);
+    }
+    ```
+    is compiled to:
+    ```
+    public nonLoopConcatenation()V
+    @Lorg/junit/Test;()
+     L0
+      LINENUMBER 10 L0
+      LDC "a"
+      ASTORE 1
+     L1
+      LINENUMBER 11 L1
+      LDC "b"
+      ASTORE 2
+     L2
+      LINENUMBER 12 L2
+      GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+      NEW java/lang/StringBuilder
+      DUP
+      INVOKESPECIAL java/lang/StringBuilder.<init> ()V
+      ALOAD 1
+      INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+      ALOAD 2
+      INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+      INVOKEVIRTUAL java/lang/StringBuilder.toString ()Ljava/lang/String;
+      INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+     L3
+      LINENUMBER 13 L3
+      RETURN
+     L4
+      LOCALVARIABLE this LStringConcatBenchmarkTest; L0 L4 0
+      LOCALVARIABLE a Ljava/lang/String; L1 L4 1
+      LOCALVARIABLE b Ljava/lang/String; L2 L4 2
+      MAXSTACK = 3
+      MAXLOCALS = 3
+    ```
+    the most important part is:
+    ```
+    NEW java/lang/StringBuilder
+    DUP
+    INVOKESPECIAL java/lang/StringBuilder.<init> ()V
+    ALOAD 1
+    INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+    ALOAD 2
+    INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+    INVOKEVIRTUAL java/lang/StringBuilder.toString ()Ljava/lang/String;
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ```
+    note that:
+    ```
     String a = "a";
     String b = "b";
-    System.out.println(a + b);
-}
-```
-is compiled to:
-```
-public nonLoopConcatenation()V
-@Lorg/junit/Test;()
- L0
-  LINENUMBER 10 L0
-  LDC "a"
-  ASTORE 1
- L1
-  LINENUMBER 11 L1
-  LDC "b"
-  ASTORE 2
- L2
-  LINENUMBER 12 L2
-  GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-  NEW java/lang/StringBuilder
-  DUP
-  INVOKESPECIAL java/lang/StringBuilder.<init> ()V
-  ALOAD 1
-  INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
-  ALOAD 2
-  INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
-  INVOKEVIRTUAL java/lang/StringBuilder.toString ()Ljava/lang/String;
-  INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
- L3
-  LINENUMBER 13 L3
-  RETURN
- L4
-  LOCALVARIABLE this LStringConcatBenchmarkTest; L0 L4 0
-  LOCALVARIABLE a Ljava/lang/String; L1 L4 1
-  LOCALVARIABLE b Ljava/lang/String; L2 L4 2
-  MAXSTACK = 3
-  MAXLOCALS = 3
-```
-the most important part is:
-```
-NEW java/lang/StringBuilder
-DUP
-INVOKESPECIAL java/lang/StringBuilder.<init> ()V
-ALOAD 1
-INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
-ALOAD 2
-INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
-INVOKEVIRTUAL java/lang/StringBuilder.toString ()Ljava/lang/String;
-INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-```
-StringBuilder appears - static string concatenation optimization
-```
-new StringBuilder().append("a").append("b");
-```
-is compiled exactly to bytecode given above
+    
+    System.out.println(new StringBuilder().append(a).append(b));
+    ```
+    is compiled exactly to the same given above
 
+    it is called: **static string concatenation optimisation**
 
+* substrings building the final String are NOT known at compile 
+  time
 
 ## java 9
 ```
