@@ -67,19 +67,31 @@ time:
     INVOKEVIRTUAL java/lang/StringBuilder.toString ()Ljava/lang/String;
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ```
-    note that:
+    and it is also a bytecode of:
     ```
     String a = "a";
     String b = "b";
     
     System.out.println(new StringBuilder().append(a).append(b));
     ```
-    is compiled exactly to the same given above
-
+    
     it is called: **static string concatenation optimisation**
 
 * substrings building the final String are NOT known at compile 
   time
+  ```
+  String result = "";
+  
+  for (int i = 0; i < 50_000; i++) {
+      result += i;
+  }
+  
+  System.out.println(result);
+  ```
+  is compiled to:
+  ```
+  
+  ```
 
 ## java 9
 ```
