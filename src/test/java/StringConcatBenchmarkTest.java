@@ -13,12 +13,15 @@ public class StringConcatBenchmarkTest {
     }
 
     @Test
-    public void nonLoopConcatenation2() {
-        System.out.println(new StringBuilder().append("a").append("b"));
+    public void nonLoopConcatenation_usingStringBuilder() {
+        String a = "a";
+        String b = "b";
+        
+        System.out.println(new StringBuilder().append(a).append(b));
     }
     
     @Test
-    public void test() {
+    public void loopConcatenation() {
         long start = System.currentTimeMillis();
         
         String result = "";
@@ -33,7 +36,7 @@ public class StringConcatBenchmarkTest {
     }
 
     @Test
-    public void test2() {
+    public void loopConcatenation_usingStringBuilder() {
         long start = System.currentTimeMillis();
 
         StringBuilder result = new StringBuilder(50_000);
