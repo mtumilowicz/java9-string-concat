@@ -39,10 +39,13 @@ public class StringConcatBenchmarkTest {
     public void loopConcatenation_usingStringBuilder() {
         long start = System.currentTimeMillis();
 
-        StringBuilder result = new StringBuilder(50_000);
+        String result = "";
 
         for (int i = 0; i < 50_000; i++) {
-            result.append(i);
+            StringBuilder sb = new StringBuilder();
+            sb.append(result);
+            sb.append(i);
+            result = sb.toString();
         }
 
         System.out.println(result);
