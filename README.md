@@ -433,12 +433,11 @@ can lead to 3 to 4 times performance improvement. You can override the
 Strategy on the command line by defining the property 
 java.lang.invoke.stringConcat.
 
+### summary
 **How string concatenation is done is a runtime decision, not a compile 
 time one anymore.**
 
-### summary
-**Using Java 9 `loopConcatenation()` takes:** `1000-1500` ms.
-
+### Using Java 9 `loopConcatenation()` takes: `1000-1500` ms.
 # project description
 
 ## summary
