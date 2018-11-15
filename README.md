@@ -469,4 +469,5 @@ public void loopConcatenation_usingStringBuilder_rightWay() {
     System.out.println(System.currentTimeMillis() - start);
 }
 ```
-**it takes just 40-50**
+
+### Using well written loop with StringBuilder problem takes just `40-50` ms
