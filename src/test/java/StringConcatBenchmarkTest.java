@@ -52,4 +52,19 @@ public class StringConcatBenchmarkTest {
 
         System.out.println(System.currentTimeMillis() - start);
     }
+
+    @Test
+    public void loopConcatenation_usingStringBuilder_rightWay() {
+        long start = System.currentTimeMillis();
+
+        StringBuilder sb = new StringBuilder(60000);
+
+        for (int i = 0; i < 50_000; i++) {
+            sb.append(i);
+        }
+
+        System.out.println(sb);
+
+        System.out.println(System.currentTimeMillis() - start);
+    }
 }
