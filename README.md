@@ -244,7 +244,7 @@ time:
     }    
     ```
 
-**Using Java 8 - `loopConcatenation()` takes:** `6000-7000` ms.
+### Using Java 8 - `loopConcatenation()` takes: `6000-7000` ms
 
 ## java 9
 * all of the substrings building the final String are known at compile 
@@ -388,6 +388,8 @@ time:
       MAXLOCALS = 5
     ```
     So conclusions are similar to `nonLoopConcatenation()`
+
+### motivations
 
 The reason to change the compiler now in this way is, from the project 
 description, to "enable future optimizations of String concatenation 
