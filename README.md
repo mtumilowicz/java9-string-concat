@@ -186,6 +186,9 @@ time:
       result = sb.toString();
   }  
   ```
+  **Note that `StringBuilder` is initialized, and converted to string 
+  (sb.toString()) every time - java compiler can not push that stuff
+  outside the loop.**
 ### summary
 * no loop
     ```
@@ -389,6 +392,10 @@ time:
     ```
     So conclusions are similar to `nonLoopConcatenation()`
 
+### summary
+**How string concatenation is done is a runtime decision, not a compile 
+time one anymore.**
+
 ### motivations
 
 The reason to change the compiler now in this way is, from the project 
@@ -432,10 +439,6 @@ the String with an exact size byte[] with no copy.
 can lead to 3 to 4 times performance improvement. You can override the 
 Strategy on the command line by defining the property 
 java.lang.invoke.stringConcat.
-
-### summary
-**How string concatenation is done is a runtime decision, not a compile 
-time one anymore.**
 
 ### Using Java 9 `loopConcatenation()` takes: `1000-1500` ms.
 
