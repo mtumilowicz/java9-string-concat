@@ -438,7 +438,15 @@ java.lang.invoke.stringConcat.
 time one anymore.**
 
 ### Using Java 9 `loopConcatenation()` takes: `1000-1500` ms.
+
 # project description
+We provide tests with benchmarks for above examples.
+
+The default java version is 9, if you want to switch it to 8, you
+have to modify `build.gradle`:
+```
+sourceCompatibility = 1.8
+```
 
 ## summary
 Please note that irrelevant of java version using of well-known 
