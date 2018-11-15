@@ -237,6 +237,8 @@ time:
     }    
     ```
 
+**Using Java 8 `loopConcatenation()` takes:** `6000-7000` ms.
+
 ## java 9
 ```
 @Test
@@ -293,5 +295,8 @@ INVOKEDYNAMIC makeConcatWithConstants(Ljava/lang/String;Ljava/lang/String;)Ljava
 INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
 ```
 INVOKEDYNAMIC makeConcatWithConstants appears
+
+### summary
+**Using Java 9 `loopConcatenation()` takes:** `1000-1500` ms.
 
 # project description
