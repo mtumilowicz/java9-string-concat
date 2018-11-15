@@ -90,8 +90,152 @@ time:
   ```
   is compiled to:
   ```
-  
+  public loopConcatenation()V
+  @Lorg/junit/Test;()
+   L0
+    LINENUMBER 25 L0
+    INVOKESTATIC java/lang/System.currentTimeMillis ()J
+    LSTORE 1
+   L1
+    LINENUMBER 27 L1
+    LDC ""
+    ASTORE 3
+   L2
+    LINENUMBER 29 L2
+    ICONST_0
+    ISTORE 4
+   L3
+   FRAME APPEND [J java/lang/String I]
+    ILOAD 4
+    LDC 50000
+    IF_ICMPGE L4
+   L5
+    LINENUMBER 30 L5
+    NEW java/lang/StringBuilder
+    DUP
+    INVOKESPECIAL java/lang/StringBuilder.<init> ()V
+    ALOAD 3
+    INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+    ILOAD 4
+    INVOKEVIRTUAL java/lang/StringBuilder.append (I)Ljava/lang/StringBuilder;
+    INVOKEVIRTUAL java/lang/StringBuilder.toString ()Ljava/lang/String;
+    ASTORE 3
+   L6
+    LINENUMBER 29 L6
+    IINC 4 1
+    GOTO L3
+   L4
+    LINENUMBER 33 L4
+   FRAME CHOP 1
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ALOAD 3
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+   L7
+    LINENUMBER 35 L7
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    INVOKESTATIC java/lang/System.currentTimeMillis ()J
+    LLOAD 1
+    LSUB
+    INVOKEVIRTUAL java/io/PrintStream.println (J)V
+   L8
+    LINENUMBER 36 L8
+    RETURN
+   L9
+    LOCALVARIABLE i I L3 L4 4
+    LOCALVARIABLE this LStringConcatBenchmarkTest; L0 L9 0
+    LOCALVARIABLE start J L1 L9 1
+    LOCALVARIABLE result Ljava/lang/String; L2 L9 3
+    MAXSTACK = 5
+    MAXLOCALS = 5
   ```
+  where the most important part is:
+  ```
+  FRAME APPEND [J java/lang/String I]
+   ILOAD 4
+   LDC 50000
+   IF_ICMPGE L4
+  L5
+   LINENUMBER 30 L5
+   NEW java/lang/StringBuilder
+   DUP
+   INVOKESPECIAL java/lang/StringBuilder.<init> ()V
+   ALOAD 3
+   INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   ILOAD 4
+   INVOKEVIRTUAL java/lang/StringBuilder.append (I)Ljava/lang/StringBuilder;
+   INVOKEVIRTUAL java/lang/StringBuilder.toString ()Ljava/lang/String;
+   ASTORE 3
+  L6
+   LINENUMBER 29 L6
+   IINC 4 1
+   GOTO L3
+  ```
+  which is equivalent of `.java`:
+  ```
+  for (int i = 0; i < 50_000; i++) {
+      StringBuilder sb = new StringBuilder();
+      sb.append(result);
+      sb.append(i);
+      result = sb.toString();
+  }  
+  ```
+### summary
+* no loop
+    ```
+    @Test
+    public void nonLoopConcatenation() {
+        String a = "a";
+        String b = "b";
+        System.out.println(a + b);
+    }
+    ```
+    is compiled to:
+    ```
+    @Test
+    public void nonLoopConcatenation_usingStringBuilder() {
+        String a = "a";
+        String b = "b";
+        
+        System.out.println(new StringBuilder().append(a).append(b));
+    }
+    ```
+* loop
+    ```
+    @Test
+    public void loopConcatenation() {
+        long start = System.currentTimeMillis();
+        
+        String result = "";
+        
+        for (int i = 0; i < 50_000; i++) {
+            result += i;
+        }
+
+        System.out.println(result);
+
+        System.out.println(System.currentTimeMillis() - start);
+    }    
+    ```
+    is compiled to:
+    ```
+    @Test
+    public void loopConcatenation_usingStringBuilder() {
+        long start = System.currentTimeMillis();
+
+        String result = "";
+
+        for (int i = 0; i < 50_000; i++) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(result);
+            sb.append(i);
+            result = sb.toString();
+        }
+
+        System.out.println(result);
+
+        System.out.println(System.currentTimeMillis() - start);
+    }    
+    ```
 
 ## java 9
 ```
