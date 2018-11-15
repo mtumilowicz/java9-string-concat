@@ -438,3 +438,26 @@ time one anymore.**
 **Using Java 9 `loopConcatenation()` takes:** `1000-1500` ms.
 
 # project description
+
+## summary
+Please note that irrelevant of java version using of well-known 
+`StringBuilder` construction (with preallocated space) is the best
+possible approach to that problem.
+
+```
+@Test
+public void loopConcatenation_usingStringBuilder_rightWay() {
+    long start = System.currentTimeMillis();
+
+    StringBuilder sb = new StringBuilder(60000);
+
+    for (int i = 0; i < 50_000; i++) {
+        sb.append(i);
+    }
+
+    System.out.println(sb);
+
+    System.out.println(System.currentTimeMillis() - start);
+}
+```
+**it takes just 40-50**
