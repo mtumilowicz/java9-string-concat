@@ -80,13 +80,20 @@ time:
 * substrings building the final String are NOT known at compile 
   time
   ```
-  String result = "";
+  @Test
+  public void loopConcatenation() {
+      long start = System.currentTimeMillis();
+      
+      String result = "";
+      
+      for (int i = 0; i < 50_000; i++) {
+          result += i;
+      }
   
-  for (int i = 0; i < 50_000; i++) {
-      result += i;
+      System.out.println(result);
+  
+      System.out.println(System.currentTimeMillis() - start);
   }
-  
-  System.out.println(result);
   ```
   is compiled to:
   ```
@@ -237,7 +244,7 @@ time:
     }    
     ```
 
-**Using Java 8 `loopConcatenation()` takes:** `6000-7000` ms.
+**Using Java 8 - `loopConcatenation()` takes:** `6000-7000` ms.
 
 ## java 9
 ```
@@ -295,6 +302,52 @@ INVOKEDYNAMIC makeConcatWithConstants(Ljava/lang/String;Ljava/lang/String;)Ljava
 INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
 ```
 INVOKEDYNAMIC makeConcatWithConstants appears
+
+
+### stategies
+StringConcatFactory offers different strategies to generate the 
+CallSite divided in byte-code generator using ASM and 
+MethodHandle-based one.
+
+* BC_SB: generate the byte-code equivalent to what javac generates 
+in Java 8.
+* BC_SB_SIZED: generate the byte-code equivalent to what javac but 
+try to estimate the initial size of the StringBuilder.
+* BC_SB_SIZED_EXACT: generate the byte-code equivalent to what javac 
+but compute the exact size of the StringBuilder.
+* MH_SB_SIZED: combines MethodHandles that ends up calling the 
+StringBuilder with an estimated initial size.
+* MH_SB_SIZED_EXACT: combines MethodHandles that ends up calling the 
+StringBuilder with an exact size.
+* MH_INLINE_SIZED_EXACT: combines MethodHandles that creates directly 
+the String with an exact size byte[] with no copy.
+* The default and most performant one is MH_INLINE_SIZED_EXACT that 
+can lead to 3 to 4 times performance improvement. You can override the 
+Strategy on the command line by defining the property 
+java.lang.invoke.stringConcat.
+
+The reason to change the compiler now in this way is, from the project 
+description, to "enable future optimizations of String concatenation 
+without requiring further changes to the bytecode emitted by javac.". 
+Dynamic method invocation is an ideal solution for that challenge, as 
+it delays method implementation to the runtime. The developers of the 
+Java runtime can then improve the implementation of the factory class, 
+without all other developers needing to recompile their projects.
+
+Recall that dynamic method invocation in Java works as follows: 
+first, the compiler places an invokedynamic bytecode instruction 
+in your method body to indicate that we’re trying to use a dynamic 
+method there. That indy instruction refers to a bootstrap method, 
+which is a regular Java method that is stored in a special attribute 
+in the class file. During runtime, this bootstrap method is called 
+to dynamically create the method we’re trying to invoke and wrap it 
+in a container object called a CallSite. Finally, the JVM extracts 
+a MethodHandle for the newly generated method from the CallSite and 
+executes the method, manipulating the stack as if it were a regular 
+method invocation.
+
+**How string concatenation is done is a runtime decision, not a compile 
+time one anymore.**
 
 ### summary
 **Using Java 9 `loopConcatenation()` takes:** `1000-1500` ms.
